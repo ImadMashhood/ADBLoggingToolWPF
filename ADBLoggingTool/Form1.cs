@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ADBLoggingTool
 {
@@ -18,12 +19,15 @@ namespace ADBLoggingTool
         bool serverStarted = false;
         bool isLogging = false;
         bool endThread = false;
+        String fileName = "test.txt";
+        string output = "";
+        string pathString;
         public Form1()
         {
             InitializeComponent();
         }
 
-        string run_process(string commands)
+        String run_process(string commands)
         {
             
             p.StartInfo.FileName = "cmd.exe";
@@ -35,15 +39,17 @@ namespace ADBLoggingTool
             do
             {
                 Application.DoEvents();
-            } while (!p.HasExited); 
-            return p.StandardOutput.ReadToEnd();
+            } while (!p.HasExited);
+            output = p.StandardOutput.ReadToEnd();
+            Console.WriteLine(output);
+            return output;
         }
 
 
         private void button1_Click(object sender, EventArgs e)
         {
             String ipAddress = ipAddressTB.Text;
-            String fileName = fileNameTB.Text;
+            fileName = fileNameTB.Text;
             if (!validateIPAddress(ipAddress))
             {
                 MessageBox.Show("Invalid IP Address, please try again.");
@@ -54,39 +60,48 @@ namespace ADBLoggingTool
                 MessageBox.Show("Invalid file name, please try again.");
                 return;
             }
-            startBtn.Enabled = false;
-            stopBtn.Enabled = true;
-            Status.Text = ("Starting Server");
-            if(!run_process("adb start-server").Contains("daemon started successfully"))
-            {
-                MessageBox.Show("Server Failed to Start, Please Try Again");
-                Status.Text = " ";
+            setupPath();
+            if (pathString.Equals("")){
                 return;
             }
+            startBtn.Enabled = false;
             Status.Text = ("Starting Server");
+            run_process("adb start-server");
+            Status.Text = ("Server Started");   
             serverStarted = true;
-            Status.Text = ("Connecting to "+ipAddress);
+            Status.Text = ("Connecting to : " + ipAddress);
             String adbConnectCall = run_process("adb connect " + ipAddress);
             if (adbConnectCall.Contains("failed"))
             {
                 MessageBox.Show("Connection Failed");
-                Status.Text = (" ");
+                Status.Text = ("");
                 return;
             }
-            Status.Text = ("Logging IP Address: "+ipAddress);
+            Status.Text = ("Cleaning past logs");
+            run_process("adb logcat -c");
+            stopBtn.Enabled = true;
+            Status.Text = ("Logging IP Address: " + ipAddress);
             new Thread(() =>
             {
                 if (endThread)
                 {
-                    return;
+                   return;
                 }
-                Console.WriteLine(run_process("adb logcat > "+fileName+".txt"));
+                isLogging = true;
+                output = run_process("adb logcat");
+                if (!output.Equals(""))
+                {
+                    writeLogs();
+                }
             }).Start();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            endThread = true;
+            if (isLogging)
+            {
+                endThread = true;
+            }
             if (serverStarted)
             {
                 Process stop = new Process();
@@ -97,8 +112,12 @@ namespace ADBLoggingTool
                 stop.StartInfo.RedirectStandardOutput = true;
                 stop.Start();
                 p.Kill();
-                Status.Text = "Logging complete, file saved";
-                endThread = false;
+                if (isLogging)
+                {
+                    Status.Text = "Logging complete, file saved";
+                    isLogging = false;
+                    endThread = false;
+                }
             }
             stopBtn.Enabled = false;
             startBtn.Enabled = true;
@@ -114,6 +133,34 @@ namespace ADBLoggingTool
             if (items.Length != 4)
                 return false;
             return items.All(item => byte.TryParse(item, out _));
+        }
+
+        private void writeLogs()
+        {
+            setupPath();
+            if (!pathString.Equals(""))
+            {
+                using (System.IO.FileStream fs = System.IO.File.Create(pathString))
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(output);
+                    fs.Write(bytes, 0, bytes.Length);
+                }
+            }
+        }
+
+        private void setupPath()
+        {
+            string folderName = @System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+            pathString = System.IO.Path.Combine(folderName, "AndroidLogs");
+            System.IO.Directory.CreateDirectory(pathString);
+            pathString = System.IO.Path.Combine(pathString, fileName + ".txt");
+            Console.WriteLine("Path to my file: {0}\n", pathString);
+            if (System.IO.File.Exists(pathString))
+            {
+                MessageBox.Show(fileName+".txt already exists, please enter a different name");
+                pathString = "";
+                return;
+            }
         }
     }
 }
