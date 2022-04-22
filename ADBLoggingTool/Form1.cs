@@ -15,6 +15,8 @@ namespace ADBLoggingTool
     public partial class Form1 : Form
     {
         Process p = new Process();
+        bool serverStarted = false;
+        bool isLogging = false;
         bool endThread = false;
         public Form1()
         {
@@ -47,41 +49,57 @@ namespace ADBLoggingTool
                 MessageBox.Show("Invalid IP Address, please try again.");
                 return;
             }
-            if (fileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
+            if (fileName.Equals("") || fileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
             {
                 MessageBox.Show("Invalid file name, please try again.");
                 return;
             }
             startBtn.Enabled = false;
             stopBtn.Enabled = true;
-            Status.Text = "Logging IP: " + ipAddress;
+            Status.Text = ("Starting Server");
+            if(!run_process("adb start-server").Contains("daemon started successfully"))
+            {
+                MessageBox.Show("Server Failed to Start, Please Try Again");
+                Status.Text = " ";
+                return;
+            }
+            Status.Text = ("Starting Server");
+            serverStarted = true;
+            Status.Text = ("Connecting to "+ipAddress);
+            String adbConnectCall = run_process("adb connect " + ipAddress);
+            if (adbConnectCall.Contains("failed"))
+            {
+                MessageBox.Show("Connection Failed");
+                Status.Text = (" ");
+                return;
+            }
+            Status.Text = ("Logging IP Address: "+ipAddress);
             new Thread(() =>
             {
                 if (endThread)
                 {
                     return;
                 }
-                Console.WriteLine(ipAddress);
-                Console.WriteLine(run_process("adb start-server"));
-                Console.WriteLine(run_process("adb connect"));
-                Console.WriteLine(run_process("adb logcat"));
+                Console.WriteLine(run_process("adb logcat > "+fileName+".txt"));
             }).Start();
-            
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             endThread = true;
-            Process stop = new Process();
-            stop.StartInfo.FileName = "cmd.exe";
-            stop.StartInfo.Arguments = "/c " + "adb kill-server";
-            stop.StartInfo.CreateNoWindow = true;
-            stop.StartInfo.UseShellExecute = false;
-            stop.StartInfo.RedirectStandardOutput = true;
-            stop.Start();
-            p.Kill();
-            Status.Text = "Logging complete, file saved";
-            endThread = false;
+            if (serverStarted)
+            {
+                Process stop = new Process();
+                stop.StartInfo.FileName = "cmd.exe";
+                stop.StartInfo.Arguments = "/c " + "adb kill-server";
+                stop.StartInfo.CreateNoWindow = true;
+                stop.StartInfo.UseShellExecute = false;
+                stop.StartInfo.RedirectStandardOutput = true;
+                stop.Start();
+                p.Kill();
+                Status.Text = "Logging complete, file saved";
+                endThread = false;
+            }
             stopBtn.Enabled = false;
             startBtn.Enabled = true;
         }
