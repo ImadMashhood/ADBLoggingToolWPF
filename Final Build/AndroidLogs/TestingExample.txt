@@ -1,0 +1,38 @@
+--------- beginning of system
+04-22 13:19:42.038  5962  5962 I wpa_supplicant: Heartbeat 13007
+--------- beginning of main
+04-22 13:19:42.561  1670  8922 I bauth_FPBAuthService: pcf : 0x1012, 0 ,1 ,0 ,0 ,0 ,0, 6.0.0.1
+04-22 13:19:42.561  1670  8922 I bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0, cso : 0, et : 0
+04-22 13:19:42.561  1670  8922 I bauth_FPBAuthService: FPBAuthService, 11702
+04-22 13:19:42.566  1369  8820 I SemWifiServiceDetector: Traff. tracking resumed
+04-22 13:19:43.028   759   759 D io_stats: !@   8,0 r 28556897 725466052 w 12870048 142885552 d 2232467 145057160 f 0 0 iot 17077696 0 th 0 0 0 pt 0 inp 0 0 217550.655
+04-22 13:19:43.034 11093 11785 W Settings: Setting wifi_on has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-22 13:19:43.035 11093 11785 W Settings: Setting wifi_on has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+04-22 13:19:43.035 11093 11785 I EPDG -- SIM0 [SMARTWIFI]: Rssi : -66 highrange : -75 lowrange : -80 mIsRssiInHystersis : false
+04-22 13:19:43.035 11093 11785 I EPDG -- SIM0 [SMARTWIFI]: isL2WHandoverProfilingRunning: returning: false
+04-22 13:19:43.035 11093 11785 I EPDG -- SIM0 [SMARTWIFI]: No need to send L2WHandoverProfiling runnable
+04-22 13:19:43.035 11093 11785 I EPDG -- SIM0 [SMARTWIFI]: getHandoverThresholdMet: value is: false
+04-22 13:19:43.097  1369  8820 D SemNscXgbMsL1: Probability - Cloud gaming: [0.003459535]
+04-22 13:19:43.098  1369  8820 D SemNscXgbMsL1: Probability - Real time: [0.00579275]
+04-22 13:19:43.100  1369  8820 D SemNscXgbMsL1: Probability - Non real time: [0.99385107]
+04-22 13:19:43.101  1369  8820 D SemNscXgbMsL1: 1 sample inference time: 5.405208 msecs
+04-22 13:19:43.104  1369  8820 D SemNscXgbL2Rt: L2 RT 1 sample inference time: 3.700104 msecs
+04-22 13:19:43.107  1369  8820 D SemNscXgbL2Nrt: L2 NRT 1 sample inference time: 2.507136 msecs
+04-22 13:19:43.565  1670  8922 I bauth_FPBAuthService: pcf : 0x1012, 0 ,1 ,0 ,0 ,0 ,0, 6.0.0.1
+04-22 13:19:43.565  1670  8922 I bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0, cso : 0, et : 0
+04-22 13:19:43.565  1670  8922 I bauth_FPBAuthService: FPBAuthService, 11702
+04-22 13:19:43.612  1369  8820 D SemNscXgbMsL1: Probability - Cloud gaming: [0.013046553]
+04-22 13:19:43.614  1369  8820 D SemNscXgbMsL1: Probability - Real time: [0.011012657]
+04-22 13:19:43.615  1369  8820 D SemNscXgbMsL1: Probability - Non real time: [0.96479964]
+04-22 13:19:43.615  1369  8820 D SemNscXgbMsL1: 1 sample inference time: 4.197761 msecs
+04-22 13:19:43.621  1369  8820 D SemNscXgbL2Rt: L2 RT 1 sample inference time: 5.309688 msecs
+04-22 13:19:43.624  1369  8820 D SemNscXgbL2Nrt: L2 NRT 1 sample inference time: 2.7625 msecs
+04-22 13:19:44.130  1369  8820 D SemNscXgbMsL1: Probability - Cloud gaming: [0.13903055]
+04-22 13:19:44.131  1369  8820 D SemNscXgbMsL1: Probability - Real time: [0.009044158]
+04-22 13:19:44.132  1369  8820 D SemNscXgbMsL1: Probability - Non real time: [0.9266278]
+04-22 13:19:44.132  1369  8820 D SemNscXgbMsL1: 1 sample inference time: 2.966562 msecs
+04-22 13:19:44.135  1369  8820 D SemNscXgbL2Rt: L2 RT 1 sample inference time: 3.143958 msecs
+04-22 13:19:44.139  1369  8820 D SemNscXgbL2Nrt: L2 NRT 1 sample inference time: 3.653594 msecs
+04-22 13:19:44.568  1670  8922 I bauth_FPBAuthService: pcf : 0x1012, 0 ,1 ,0 ,0 ,0 ,0, 6.0.0.1
+04-22 13:19:44.568  1670  8922 I bauth_FPBAuthService: thread id : 1, preenroll_flag : 0, nd cnt : 0, cso : 0, et : 0
+04-22 13:19:44.568  1670  8922 I bauth_FPBAuthService: FPBAuthService, 11702
