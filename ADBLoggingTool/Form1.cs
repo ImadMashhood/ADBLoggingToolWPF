@@ -48,27 +48,38 @@ namespace ADBLoggingTool
 
         private void button1_Click(object sender, EventArgs e)
         {
+            //Take in user inputs
             String ipAddress = ipAddressTB.Text;
             fileName = fileNameTB.Text;
+            //Input Validation for IP and File Name
             if (!validateIPAddress(ipAddress))
             {
                 MessageBox.Show("Invalid IP Address, please try again.");
                 return;
             }
-            if (fileName.Equals("") || fileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
+            if (fileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
             {
                 MessageBox.Show("Invalid file name, please try again.");
                 return;
             }
+            //If no name is entered fill name with current timestamp
+            if(fileName == "")
+            {
+                fileName = DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+            //Confirm if path exists
             setupPath();
             if (pathString.Equals("")){
                 return;
             }
+            //Disable start button, stop button cant be enabled yet cause termination fo connection acts weird at times
             startBtn.Enabled = false;
+            //Set up ADB Server
             Status.Text = ("Starting Server");
             run_process("adb start-server");
             Status.Text = ("Server Started");   
             serverStarted = true;
+            //Once server is started attept connection to IP Address
             Status.Text = ("Connecting to : " + ipAddress);
             String adbConnectCall = run_process("adb connect " + ipAddress);
             if (adbConnectCall.Contains("failed"))
@@ -77,10 +88,16 @@ namespace ADBLoggingTool
                 Status.Text = ("");
                 return;
             }
-            Status.Text = ("Cleaning past logs");
-            run_process("adb logcat -c");
+            //If user wants to clear previous logs, clean it
+            if (clearPrevLogsCB.Checked)
+            {
+                Status.Text = ("Cleaning past logs");
+                run_process("adb logcat -c");
+            }
+            //Allow stopping now
             stopBtn.Enabled = true;
             Status.Text = ("Logging IP Address: " + ipAddress);
+            //Start Logging Thread
             new Thread(() =>
             {
                 if (endThread)
@@ -91,6 +108,8 @@ namespace ADBLoggingTool
                 output = run_process("adb logcat");
                 if (!output.Equals(""))
                 {
+                    //Write Logs to file
+                    //TODO: Write Logs to file at the same time.
                     writeLogs();
                 }
             }).Start();
@@ -98,10 +117,12 @@ namespace ADBLoggingTool
 
         private void button2_Click(object sender, EventArgs e)
         {
+            //If Logging is taking place close the thread
             if (isLogging)
             {
                 endThread = true;
             }
+            //This will kill the server if the server is still running
             if (serverStarted)
             {
                 Process stop = new Process();
@@ -123,6 +144,7 @@ namespace ADBLoggingTool
             startBtn.Enabled = true;
         }
 
+        //Simple IP Validation Method found on google
         private bool validateIPAddress(String ipAddress)
         {
             if (String.IsNullOrEmpty(ipAddress))
@@ -135,6 +157,7 @@ namespace ADBLoggingTool
             return items.All(item => byte.TryParse(item, out _));
         }
 
+        //Writes logs using FileStream
         private void writeLogs()
         {
             setupPath();
@@ -148,6 +171,7 @@ namespace ADBLoggingTool
             }
         }
 
+        //Setups and checks the file path
         private void setupPath()
         {
             string folderName = @System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);

@@ -37,6 +37,7 @@ namespace ADBLoggingTool
             this.fileNameTB = new System.Windows.Forms.TextBox();
             this.stopBtn = new System.Windows.Forms.Button();
             this.Status = new System.Windows.Forms.Label();
+            this.clearPrevLogsCB = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // ipAddressTB
@@ -116,12 +117,24 @@ namespace ADBLoggingTool
             this.Status.TabIndex = 7;
             this.Status.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // clearPrevLogsCB
+            // 
+            this.clearPrevLogsCB.AutoSize = true;
+            this.clearPrevLogsCB.ForeColor = System.Drawing.Color.White;
+            this.clearPrevLogsCB.Location = new System.Drawing.Point(120, 115);
+            this.clearPrevLogsCB.Name = "clearPrevLogsCB";
+            this.clearPrevLogsCB.Size = new System.Drawing.Size(101, 17);
+            this.clearPrevLogsCB.TabIndex = 8;
+            this.clearPrevLogsCB.Text = "Clear Prev Logs";
+            this.clearPrevLogsCB.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(522, 166);
+            this.Controls.Add(this.clearPrevLogsCB);
             this.Controls.Add(this.Status);
             this.Controls.Add(this.stopBtn);
             this.Controls.Add(this.startBtn);
@@ -146,6 +159,7 @@ namespace ADBLoggingTool
         private System.Windows.Forms.TextBox fileNameTB;
         private System.Windows.Forms.Button stopBtn;
         private System.Windows.Forms.Label Status;
+        private System.Windows.Forms.CheckBox clearPrevLogsCB;
     }
 }
 
