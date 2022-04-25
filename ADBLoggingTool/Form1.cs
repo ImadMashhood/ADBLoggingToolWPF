@@ -19,7 +19,8 @@ namespace ADBLoggingTool
         bool serverStarted = false;
         bool isLogging = false;
         bool endThread = false;
-        String fileName = "test.txt";
+        String ipAddress = "";
+        String fileName = "";
         string output = "";
         string pathString;
         public Form1()
@@ -49,7 +50,7 @@ namespace ADBLoggingTool
         private void button1_Click(object sender, EventArgs e)
         {
             //Take in user inputs
-            String ipAddress = ipAddressTB.Text;
+            ipAddress = ipAddressTB.Text;
             fileName = fileNameTB.Text;
             //Input Validation for IP and File Name
             if (!validateIPAddress(ipAddress))
@@ -68,10 +69,11 @@ namespace ADBLoggingTool
                 fileName = DateTime.Now.ToString("yyyyMMddHHmmss");
             }
             //Confirm if path exists
-            setupPath();
+            setupPath("AndroidLogs");
             if (pathString.Equals("")){
                 return;
             }
+            fileNameTB.Text = (fileName+".txt");
             //Disable start button, stop button cant be enabled yet cause termination fo connection acts weird at times
             startBtn.Enabled = false;
             //Set up ADB Server
@@ -142,6 +144,7 @@ namespace ADBLoggingTool
             }
             stopBtn.Enabled = false;
             startBtn.Enabled = true;
+            SaveProps();
         }
 
         //Simple IP Validation Method found on google
@@ -160,7 +163,7 @@ namespace ADBLoggingTool
         //Writes logs using FileStream
         private void writeLogs()
         {
-            setupPath();
+            setupPath("AndroidLogs");
             if (!pathString.Equals(""))
             {
                 using (System.IO.FileStream fs = System.IO.File.Create(pathString))
@@ -172,10 +175,10 @@ namespace ADBLoggingTool
         }
 
         //Setups and checks the file path
-        private void setupPath()
+        private void setupPath(String subfolder)
         {
             string folderName = @System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
-            pathString = System.IO.Path.Combine(folderName, "AndroidLogs");
+            pathString = System.IO.Path.Combine(folderName, subfolder);
             System.IO.Directory.CreateDirectory(pathString);
             pathString = System.IO.Path.Combine(pathString, fileName + ".txt");
             Console.WriteLine("Path to my file: {0}\n", pathString);
@@ -186,5 +189,24 @@ namespace ADBLoggingTool
                 return;
             }
         }
+
+        //On Close method
+        private void SaveProps()
+        {
+            //Save Settings
+            Properties.Settings.Default.ipAddress = ipAddressTB.Text;
+            Properties.Settings.Default.prevCheckedLogs = clearPrevLogsCB.Checked;
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+        }
+
+        //On Load Method
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //Get Settings
+            ipAddressTB.Text = Properties.Settings.Default.ipAddress;
+            clearPrevLogsCB.Checked = Properties.Settings.Default.prevCheckedLogs;
+        }
+
     }
 }

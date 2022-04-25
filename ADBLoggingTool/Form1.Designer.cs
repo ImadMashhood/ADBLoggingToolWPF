@@ -110,7 +110,7 @@ namespace ADBLoggingTool
             this.Status.AutoSize = true;
             this.Status.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Status.ForeColor = System.Drawing.Color.White;
-            this.Status.Location = new System.Drawing.Point(112, 108);
+            this.Status.Location = new System.Drawing.Point(116, 145);
             this.Status.MinimumSize = new System.Drawing.Size(280, 26);
             this.Status.Name = "Status";
             this.Status.Size = new System.Drawing.Size(280, 26);
@@ -133,7 +133,7 @@ namespace ADBLoggingTool
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
-            this.ClientSize = new System.Drawing.Size(522, 166);
+            this.ClientSize = new System.Drawing.Size(522, 187);
             this.Controls.Add(this.clearPrevLogsCB);
             this.Controls.Add(this.Status);
             this.Controls.Add(this.stopBtn);
@@ -146,6 +146,7 @@ namespace ADBLoggingTool
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ADB Logging Tool";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

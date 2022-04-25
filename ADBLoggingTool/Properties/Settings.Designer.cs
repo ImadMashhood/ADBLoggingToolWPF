@@ -17,6 +17,8 @@ namespace ADBLoggingTool.Properties
     {
 
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+        internal string ipAddress;
+        internal bool prevCheckedLogs;
 
         public static Settings Default
         {
