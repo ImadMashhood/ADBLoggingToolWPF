@@ -2,14 +2,8 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace ADBLoggingTool
 {
@@ -23,6 +17,7 @@ namespace ADBLoggingTool
         String fileName = "";
         string output = "";
         string pathString;
+        List<String> connectedDevices;
         public Form1()
         {
             InitializeComponent();
@@ -50,14 +45,17 @@ namespace ADBLoggingTool
         private void button1_Click(object sender, EventArgs e)
         {
             //Take in user inputs
-            ipAddress = ipAddressTB.Text;
-            fileName = fileNameTB.Text;
-            //Input Validation for IP and File Name
-            if (!validateIPAddress(ipAddress))
+            if(connectedDevices.Count <= 1)
             {
-                MessageBox.Show("Invalid IP Address, please try again.");
-                return;
+                ipAddress = ipAddressTB.Text;
+
             }
+            else
+            {
+                ipAddress = ipAddressCB.Text;
+            }
+            fileName = fileNameTB.Text;
+            //Input Validation for File Name
             if (fileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
             {
                 MessageBox.Show("Invalid file name, please try again.");
@@ -66,14 +64,8 @@ namespace ADBLoggingTool
             //If no name is entered fill name with current timestamp
             if(fileName == "")
             {
-                fileName = DateTime.Now.ToString("yyyyMMddHHmmss");
+                fileName = DateTime.Now.ToString("yyyyMMddHHmmss")+"-logs";
             }
-            //Confirm if path exists
-            setupPath("AndroidLogs");
-            if (pathString.Equals("")){
-                return;
-            }
-            fileNameTB.Text = (fileName+".txt");
             //Disable start button, stop button cant be enabled yet cause termination fo connection acts weird at times
             startBtn.Enabled = false;
             //Set up ADB Server
@@ -107,13 +99,7 @@ namespace ADBLoggingTool
                    return;
                 }
                 isLogging = true;
-                output = run_process("adb logcat");
-                if (!output.Equals(""))
-                {
-                    //Write Logs to file
-                    //TODO: Write Logs to file at the same time.
-                    writeLogs();
-                }
+                run_process("adb logcat > "+fileName+".txt");
             }).Start();
         }
 
@@ -134,7 +120,6 @@ namespace ADBLoggingTool
                 stop.StartInfo.UseShellExecute = false;
                 stop.StartInfo.RedirectStandardOutput = true;
                 stop.Start();
-                p.Kill();
                 if (isLogging)
                 {
                     Status.Text = "Logging complete, file saved";
@@ -144,69 +129,88 @@ namespace ADBLoggingTool
             }
             stopBtn.Enabled = false;
             startBtn.Enabled = true;
-            SaveProps();
         }
 
-        //Simple IP Validation Method found on google
-        private bool validateIPAddress(String ipAddress)
-        {
-            if (String.IsNullOrEmpty(ipAddress))
-                return false;
-
-            var items = ipAddress.Split('.');
-
-            if (items.Length != 4)
-                return false;
-            return items.All(item => byte.TryParse(item, out _));
-        }
-
-        //Writes logs using FileStream
-        private void writeLogs()
-        {
-            setupPath("AndroidLogs");
-            if (!pathString.Equals(""))
-            {
-                using (System.IO.FileStream fs = System.IO.File.Create(pathString))
-                {
-                    byte[] bytes = Encoding.UTF8.GetBytes(output);
-                    fs.Write(bytes, 0, bytes.Length);
-                }
-            }
-        }
-
-        //Setups and checks the file path
-        private void setupPath(String subfolder)
-        {
-            string folderName = @System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
-            pathString = System.IO.Path.Combine(folderName, subfolder);
-            System.IO.Directory.CreateDirectory(pathString);
-            pathString = System.IO.Path.Combine(pathString, fileName + ".txt");
-            Console.WriteLine("Path to my file: {0}\n", pathString);
-            if (System.IO.File.Exists(pathString))
-            {
-                MessageBox.Show(fileName+".txt already exists, please enter a different name");
-                pathString = "";
-                return;
-            }
-        }
 
         //On Close method
         private void SaveProps()
         {
             //Save Settings
-            Properties.Settings.Default.ipAddress = ipAddressTB.Text;
+            if(connectedDevices.Count <= 1)
+            {
+                Properties.Settings.Default.ipAddress = ipAddressTB.Text;
+            }
+            else
+            {
+                Properties.Settings.Default.ipAddress = ipAddressCB.Text;
+            }
             Properties.Settings.Default.prevCheckedLogs = clearPrevLogsCB.Checked;
             Properties.Settings.Default.Save();
             Properties.Settings.Default.Reload();
+            //Reconnect to all devices
+            foreach(String connectedDevice in connectedDevices)
+            {
+                run_process("adb connect " + connectedDevice);
+            }
         }
 
         //On Load Method
         private void Form1_Load(object sender, EventArgs e)
         {
             //Get Settings
-            ipAddressTB.Text = Properties.Settings.Default.ipAddress;
+            //Check total amount of connected devices and enable the correct fields
+            connectedDevices = checkConnectedDevices();
+            setupIPFields();
+        }
+
+        private void setupIPFields()
+        {
+            if (connectedDevices.Count <= 1)
+            {
+                ipAddressTB.Text = Properties.Settings.Default.ipAddress;
+                ipAddressCB.Visible = false;
+                ipAddressTB.Visible = true;
+            }
+            else
+            {
+                string test = Properties.Settings.Default.ipAddress;
+                ipAddressTB.Visible = false;
+                ipAddressCB.Visible = true;
+                foreach (String connectedDevice in connectedDevices)
+                {
+                    ipAddressCB.Items.Add(connectedDevice);
+                }
+            }
             clearPrevLogsCB.Checked = Properties.Settings.Default.prevCheckedLogs;
         }
 
+        private List<String> checkConnectedDevices()
+        {
+            List<String> connectedDevices = new List<String>();
+            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.Arguments = "/c " + "adb devices";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.Start();
+            //We ignore the first line since its just a title
+            while (!p.StandardOutput.EndOfStream)
+            {
+                output = (p.StandardOutput.ReadLine());
+                if(output.Contains("List") || output.Equals(""))
+                {
+                    continue;
+                }
+                string[] outputArray = output.Split(':');
+                Console.WriteLine(outputArray[0]);
+                connectedDevices.Add(outputArray[0]);
+            }
+            return connectedDevices;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveProps();
+        }
     }
 }

@@ -38,6 +38,7 @@ namespace ADBLoggingTool
             this.stopBtn = new System.Windows.Forms.Button();
             this.Status = new System.Windows.Forms.Label();
             this.clearPrevLogsCB = new System.Windows.Forms.CheckBox();
+            this.ipAddressCB = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // ipAddressTB
@@ -128,12 +129,22 @@ namespace ADBLoggingTool
             this.clearPrevLogsCB.Text = "Clear Prev Logs";
             this.clearPrevLogsCB.UseVisualStyleBackColor = true;
             // 
+            // ipAddressCB
+            // 
+            this.ipAddressCB.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipAddressCB.FormattingEnabled = true;
+            this.ipAddressCB.Location = new System.Drawing.Point(121, 21);
+            this.ipAddressCB.Name = "ipAddressCB";
+            this.ipAddressCB.Size = new System.Drawing.Size(264, 28);
+            this.ipAddressCB.TabIndex = 9;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(522, 187);
+            this.Controls.Add(this.ipAddressCB);
             this.Controls.Add(this.clearPrevLogsCB);
             this.Controls.Add(this.Status);
             this.Controls.Add(this.stopBtn);
@@ -146,6 +157,7 @@ namespace ADBLoggingTool
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ADB Logging Tool";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -161,6 +173,7 @@ namespace ADBLoggingTool
         private System.Windows.Forms.Button stopBtn;
         private System.Windows.Forms.Label Status;
         private System.Windows.Forms.CheckBox clearPrevLogsCB;
+        private System.Windows.Forms.ComboBox ipAddressCB;
     }
 }
 
